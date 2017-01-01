@@ -1,6 +1,7 @@
 package com.congro.biz;
 
 import com.congro.data.EventBody;
+import org.apache.commons.io.FileUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -25,8 +26,8 @@ public class QueueManagerImpl implements QueueManager {
     private String bootstrapServer;
     private String topicName;
 
-    Consumer<String, String> consumer;
-    Producer<String, String> producer;
+    Consumer<String, byte[]> consumer;
+    Producer<String, byte[]> producer;
 
     public QueueManagerImpl(String bootstrapServer,String topicName) {
         this.bootstrapServer = bootstrapServer;
@@ -44,7 +45,7 @@ public class QueueManagerImpl implements QueueManager {
 //        consumerProps.put("receive.buffer.bytes","262144");
 //        consumerProps.put("max.partition.fetch.bytes","2097152");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
         consumer = new KafkaConsumer<>(consumerProps);
         consumer.subscribe(Arrays.asList(topicName));
 
@@ -56,7 +57,7 @@ public class QueueManagerImpl implements QueueManager {
         producerProps.put("linger.ms", 100);
         producerProps.put("buffer.memory", 16777216); //16M total size of the producer pool
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
         producer = new KafkaProducer<>(producerProps);
 
     }
@@ -73,7 +74,7 @@ public class QueueManagerImpl implements QueueManager {
             ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayStream);
             outputStream.writeObject(eventBody);
             outputStream.flush();
-            producer.send(new ProducerRecord<>(topicName, byteArrayStream.toString()));
+            producer.send(new ProducerRecord<>(topicName, byteArrayStream.toByteArray()));
             producer.flush();
 
         } catch (IOException e) {
@@ -83,11 +84,11 @@ public class QueueManagerImpl implements QueueManager {
 
     public List<EventBody> readFromQueue() {
         List<EventBody> readBuffer = new ArrayList<>();
-        ConsumerRecords<String, String> records = consumer.poll(1000);
+        ConsumerRecords<String, byte[]> records = consumer.poll(1000);
         ByteArrayInputStream byteArrayInput;
         ObjectInputStream objectInputStream;
-        for(ConsumerRecord<String, String> consumerRecord : records) {
-            byteArrayInput = new ByteArrayInputStream(consumerRecord.value().getBytes());
+        for(ConsumerRecord<String, byte[]> consumerRecord : records) {
+            byteArrayInput = new ByteArrayInputStream(consumerRecord.value());
             try {
                 objectInputStream = new ObjectInputStream(byteArrayInput);
                 EventBody eventBody = (EventBody) objectInputStream.readObject();
@@ -110,7 +111,7 @@ public class QueueManagerImpl implements QueueManager {
 //        eventBody.setEventType(5);
 //        eventBody.setContentId("78599");
 //        eventBody.setHostURL("http://mydomain.com");
-//        QueueManagerImpl qoosh = new QueueManagerImpl("192.168.233.129:9092", "test1");
+//        QueueManagerImpl qoosh = new QueueManagerImpl("192.168.136.131:9092", "test2");
 //        qoosh.init();
 //        qoosh.insertInQueue(eventBody);
 //        qoosh.producer.flush();
@@ -118,10 +119,42 @@ public class QueueManagerImpl implements QueueManager {
 //    }
 
 //    public static void main(String[] args) {
-//        QueueManagerImpl qoosh = new QueueManagerImpl("192.168.233.129:9092", "qoosh-1");
+//        QueueManagerImpl qoosh = new QueueManagerImpl("192.168.136.131:9092", "test2");
 //        qoosh.init();
 //        List<EventBody> eventBodies = qoosh.readFromQueue();
 //        System.out.println(eventBodies.size());
 //        qoosh.preDestroy();
+//    }
+
+//    public static void main(String[] args) {
+//        EventBody eventBody = new EventBody();
+//        eventBody.setEventType(5);
+//        eventBody.setContentId("78599");
+//        eventBody.setHostURL("http://mydomain.com");
+//        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+//        try {
+//            FileOutputStream fileOutputStream = new FileOutputStream("c:\\test.txt");
+//            ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayStream);
+//            outputStream.writeObject(eventBody);
+//            outputStream.flush();
+//            byteArrayStream.writeTo(fileOutputStream);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    public static void main(String[] args) {
+//
+//        try {
+//            ByteArrayInputStream byteArrayInput = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File("c:\\test.txt")));
+//            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInput);
+//            EventBody eventBody = (EventBody) objectInputStream.readObject();
+//            System.out.println(eventBody);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
 //    }
 }

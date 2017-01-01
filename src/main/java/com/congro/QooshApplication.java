@@ -19,11 +19,7 @@ public class QooshApplication {
 
 	@Bean
 	public QueueManager queueManager() {
-		return new QueueManagerImpl("192.168.233.129:9092","qoosh-1");
+		return new QueueManagerImpl("192.168.136.131:9092","qoosh-2");
 	}
 
-	@Bean
-	public EventTransferHub eventTransferHub() {
-		return new EventTransferHub();
-	}
 }
