@@ -1,6 +1,6 @@
 package com.congro.ws;
 
-import com.congro.biz.QueueManager;
+import com.congro.biz.QueuePollManager;
 import com.congro.data.EventBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     @Autowired
-    private QueueManager queueManager;
+    private QueuePollManager queuePollManager;
 
     @RequestMapping(method = RequestMethod.POST, value = "/event")
     public void issueEvent(@RequestBody EventBody eventBody) {
-        queueManager.insertInQueue(eventBody);
+        queuePollManager.insertInQueue(eventBody);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/event/{text}")

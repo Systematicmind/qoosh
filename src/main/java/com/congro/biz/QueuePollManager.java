@@ -7,11 +7,12 @@ import java.util.List;
 /**
  * Created by Amir on 12/18/2016.
  */
-public interface QueueManager {
-    void insertInQueue(EventBody eventBody);
+public interface QueuePollManager<T> {
 
-    List<EventBody> readFromQueue();
+    List<T> readFromQueue();
 
     void commitOffset();
+
+    void closeQueue();
 
 }
