@@ -27,9 +27,9 @@ public class KafkaQueuePollManager<T> implements QueuePollManager<T> {
         closeQueue();
     }
 
-    public List<T> readFromQueue() {
+    public List<T> readFromQueue(int pollWait) {
         List<T> readBuffer = new ArrayList<>();
-        ConsumerRecords<String, byte[]> records = consumer.poll(1000);
+        ConsumerRecords<String, byte[]> records = consumer.poll(pollWait);
         ByteArrayInputStream byteArrayInput;
         ObjectInputStream objectInputStream;
         for(ConsumerRecord<String, byte[]> consumerRecord : records) {

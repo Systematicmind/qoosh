@@ -14,7 +14,7 @@ public abstract class QueuePollExecutor<T>  {
     public void execute() {
         executorService = Executors.newScheduledThreadPool(getThreadNumber());
         for (int i = 0; i < getThreadNumber(); i++) {
-            executorService.scheduleWithFixedDelay(getNewTQueueProcessPipeline(), getThreadDelay(), getThreadInterval(), TimeUnit.SECONDS);
+            executorService.scheduleWithFixedDelay(getNewQueueProcessPipeline(), getThreadDelay(), getThreadInterval(), TimeUnit.SECONDS);
         }
     }
 
@@ -38,6 +38,6 @@ public abstract class QueuePollExecutor<T>  {
 
     protected abstract short getThreadInterval();
 
-    protected abstract QueueProcessPipeline<T> getNewTQueueProcessPipeline();
+    protected abstract QueueProcessPipeline<T> getNewQueueProcessPipeline();
 
 }

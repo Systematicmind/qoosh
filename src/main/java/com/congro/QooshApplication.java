@@ -1,21 +1,19 @@
 package com.congro;
 
 import com.congro.biz.EventTransferHub;
-import com.congro.biz.QueuePollManager;
-import com.congro.biz.KafkaQueuePollManager;
+import com.congro.biz.QueueConfigBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 @SpringBootApplication
-@PropertySource("application.proprties")
-@PropertySource("kafkaproducer.proprties")
-@PropertySource("kafkaconsumer.proprties")
+@PropertySource("application.properties")
+@PropertySource("kafkaproducer.properties")
+@PropertySource("kafkaconsumer.properties")
 public class QooshApplication {
 
 	public static void main(String[] args) {

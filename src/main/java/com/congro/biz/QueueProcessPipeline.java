@@ -1,11 +1,7 @@
 package com.congro.biz;
 
-import com.congoro.congops.OPS;
-import com.congoro.congops.Op;
 import com.congoro.congops.OpContext;
 
-import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Amir Hajizadeh on 1/5/2017.
@@ -18,28 +14,52 @@ public class QueueProcessPipeline<T> implements Runnable {
     private OpContext opContext;
     private String topicName;
     private String queueName;
+    private QueueManagerFactory queueManagerFactory;
+    private int pollWait = 1000;
 
     public QueueProcessPipeline(String queueName, String topicName,
-                                QueuePollService<T> queuePollService, QueuePoolProcessor<T> processor, OpContext opContext) {
+                                QueuePollService<T> queuePollService,
+                                QueuePoolProcessor<T> processor,
+                                OpContext opContext,
+                                QueueManagerFactory queueManagerFactory) {
         this.queuePollService = queuePollService;
         this.processor = processor;
         this.opContext = opContext;
         this.topicName = topicName;
         this.queueName = queueName;
+        this.queueManagerFactory = queueManagerFactory;
+    }
+
+    public QueueProcessPipeline(String queueName, String topicName,
+                                QueuePollService<T> queuePollService,
+                                QueuePoolProcessor<T> processor,
+                                OpContext opContext,
+                                QueueManagerFactory queueManagerFactory,
+                                int pollWait) {
+        this.queuePollService = queuePollService;
+        this.processor = processor;
+        this.opContext = opContext;
+        this.topicName = topicName;
+        this.queueName = queueName;
+        this.queueManagerFactory = queueManagerFactory;
+        this.pollWait = pollWait;
     }
 
     @Override
     public void run() {
+        System.out.println("QueueProcessPipeline--> polling the queue just started.");
         if (queuePollManager == null) {
-            queuePollManager = QueueManagerFactory.getInstance().getQueue(queueName,topicName);
+            queuePollManager = queueManagerFactory.getPollQueue(queueName, topicName);
         }
-        processor.setRawData(queuePollManager.readFromQueue());
+        processor.setRawData(queuePollManager.readFromQueue(pollWait));
         try {
             queuePollService.process(processor,opContext);
             queuePollManager.commitOffset();
         } catch (Throwable e) {
+            System.out.println("QueueProcessPipeline--> polling or processing the queue failed!!!");
             queuePollManager.closeQueue();
-            queuePollManager = QueueManagerFactory.getInstance().getQueue(queueName,topicName);
+            System.out.println("QueueProcessPipeline--> a new queue is about to be created.");
+            queuePollManager = queueManagerFactory.getPollQueue(queueName, topicName);
         }
     }
 }

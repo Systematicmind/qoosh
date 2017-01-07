@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface QueuePollManager<T> {
 
-    List<T> readFromQueue();
+    List<T> readFromQueue(int pollWait);
 
     void commitOffset();
 

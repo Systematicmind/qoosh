@@ -74,12 +74,12 @@ public class QueueConfigBuilder {
     }
 
     public short getConsumerThreadDelay(String topicName) {
-        String delay = env.getProperty(getConsumerPrefix(topicName) + THREAD_NO);
+        String delay = env.getProperty(getConsumerPrefix(topicName) + THREAD_DELAY);
         return delay == null ? (short)0 : Short.valueOf(delay);
     }
 
     public short getConsumerThreadInterval(String topicName) {
-        String interval = env.getProperty(getConsumerPrefix(topicName) + THREAD_NO);
+        String interval = env.getProperty(getConsumerPrefix(topicName) + THREAD_INTERVAL);
         return interval == null ? (short)0 : Short.valueOf(interval);
     }
 

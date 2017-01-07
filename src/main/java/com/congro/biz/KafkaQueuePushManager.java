@@ -1,6 +1,5 @@
 package com.congro.biz;
 
-import com.congro.data.EventBody;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -40,11 +39,6 @@ public class KafkaQueuePushManager<T> implements QueuePushManager<T> {
 
     protected void closeProducer() {
         producer.close();
-    }
-
-    @PreDestroy
-    protected void preDestroy() {
-        closeProducer();
     }
 
 }

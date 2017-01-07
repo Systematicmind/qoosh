@@ -33,6 +33,7 @@ public class TopicOneProcessor extends QueuePoolProcessor<EventBody> {
         for (EventBody eventBody : getRawData()) {
             try {
                 bufferedWriter.write(eventBody + "\r\n");
+                bufferedWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }

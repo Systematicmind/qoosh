@@ -16,9 +16,12 @@ public class TopicOneQueuePollExecutor extends QueuePollExecutor<EventBody> {
     QueuePollService<EventBody> queuePollService;
 
     @Autowired
-    QueueConfigBuilder queueConfigBuilder;
+    private QueueManagerFactory queueManagerFactory;
 
-//    this is a common OpContext for every Op base processor which is being run in its own thread
+    @Autowired
+    private QueueConfigBuilder queueConfigBuilder;
+
+    //    this is a common OpContext for every Op base processor which is being run in its own thread
     OpContext opContext = new OpContext();
 
     @Override
@@ -37,7 +40,13 @@ public class TopicOneQueuePollExecutor extends QueuePollExecutor<EventBody> {
     }
 
     @Override
-    protected QueueProcessPipeline<EventBody> getNewTQueueProcessPipeline() {
-        return new QueueProcessPipeline(QueueManagerFactory.KAFKA_QUEUE, MyConst.TOPIC_ONE_NAME, queuePollService,new TopicOneProcessor(),opContext);
+    protected QueueProcessPipeline<EventBody> getNewQueueProcessPipeline() {
+        return new QueueProcessPipeline(QueueManagerFactory.KAFKA_QUEUE,
+                MyConst.TOPIC_ONE_NAME,
+                queuePollService,
+                new TopicOneProcessor(),
+                opContext,
+                queueManagerFactory,
+                queueConfigBuilder.getConsumerPollWait(MyConst.TOPIC_ONE_NAME));
     }
 }
