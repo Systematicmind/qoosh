@@ -1,6 +1,5 @@
 package com.congro.biz;
 
-import com.congoro.congops.Op;
 import com.congoro.congops.OpContext;
 import com.congoro.congops.OpPerformException;
 import com.congro.data.EventBody;
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * Created by Amir Hajizadeh on 1/4/2017.
  */
-public class TopicOneProcessor extends QueuePoolProcessor<EventBody> {
+public class TopicOneProcessor extends QueuePollProcessor<EventBody> {
 
     private BufferedWriter bufferedWriter;
 

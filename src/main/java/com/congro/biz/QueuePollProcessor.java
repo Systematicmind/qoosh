@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Amir Hajizadeh on 1/5/2017.
  */
-public abstract class QueuePoolProcessor<T> implements Op<List<T>> {
+public abstract class QueuePollProcessor<T> implements Op<List<T>> {
 
     private List<T> rawData;
 

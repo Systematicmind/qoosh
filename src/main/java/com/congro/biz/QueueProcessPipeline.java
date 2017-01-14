@@ -9,7 +9,7 @@ import com.congoro.congops.OpContext;
 public class QueueProcessPipeline<T> implements Runnable {
 
     private QueuePollService<T> queuePollService;
-    private QueuePoolProcessor<T> processor;
+    private QueuePollProcessor<T> processor;
     private QueuePollManager<T> queuePollManager;
     private OpContext opContext;
     private String topicName;
@@ -19,7 +19,7 @@ public class QueueProcessPipeline<T> implements Runnable {
 
     public QueueProcessPipeline(String queueName, String topicName,
                                 QueuePollService<T> queuePollService,
-                                QueuePoolProcessor<T> processor,
+                                QueuePollProcessor<T> processor,
                                 OpContext opContext,
                                 QueueManagerFactory queueManagerFactory) {
         this.queuePollService = queuePollService;
@@ -32,7 +32,7 @@ public class QueueProcessPipeline<T> implements Runnable {
 
     public QueueProcessPipeline(String queueName, String topicName,
                                 QueuePollService<T> queuePollService,
-                                QueuePoolProcessor<T> processor,
+                                QueuePollProcessor<T> processor,
                                 OpContext opContext,
                                 QueueManagerFactory queueManagerFactory,
                                 int pollWait) {
@@ -51,8 +51,8 @@ public class QueueProcessPipeline<T> implements Runnable {
         if (queuePollManager == null) {
             queuePollManager = queueManagerFactory.getPollQueue(queueName, topicName);
         }
-        processor.setRawData(queuePollManager.readFromQueue(pollWait));
         try {
+            processor.setRawData(queuePollManager.readFromQueue(pollWait));
             queuePollService.process(processor,opContext);
             queuePollManager.commitOffset();
         } catch (Throwable e) {

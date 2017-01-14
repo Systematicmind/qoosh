@@ -1,0 +1,1 @@
+mvn spring-boot:run C:\congserv-wd -e -X
